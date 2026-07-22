@@ -1,0 +1,99 @@
+`timescale 1ns/1ps
+
+module tb_cache;
+
+logic clk;
+logic rst;
+logic read;
+logic write;
+
+logic [31:0] address;
+logic [31:0] write_data;
+
+logic [31:0] read_data;
+logic hit;
+
+two_way_cache DUT(
+    .clk(clk),
+    .rst(rst),
+    .read(read),
+    .write(write),
+    .address(address),
+    .write_data(write_data),
+    .read_data(read_data),
+    .hit(hit)
+);
+
+always #5 clk = ~clk;
+
+initial
+begin
+
+clk = 0;
+rst = 1;
+read = 0;
+write = 0;
+address = 0;
+write_data = 0;
+
+#10;
+rst = 0;
+
+#10;
+write = 1;
+address = 32'h00000010;
+write_data = 32'hAAAAAAAA;
+
+#10;
+write = 0;
+
+#10;
+read = 1;
+address = 32'h00000010;
+
+#10;
+read = 0;
+
+$display("----------------------------------");
+$display("Read Address 0x10");
+$display("Hit = %b",hit);
+$display("Data = %h",read_data);
+
+#10;
+write = 1;
+address = 32'h00000020;
+write_data = 32'hBBBBBBBB;
+
+#10;
+write = 0;
+
+#10;
+read = 1;
+address = 32'h00000020;
+
+#10;
+read = 0;
+
+$display("----------------------------------");
+$display("Read Address 0x20");
+$display("Hit = %b",hit);
+$display("Data = %h",read_data);
+
+#10;
+read = 1;
+address = 32'h00000040;
+
+#10;
+read = 0;
+
+$display("----------------------------------");
+$display("Read Address 0x40");
+$display("Hit = %b",hit);
+$display("Data = %h",read_data);
+
+#20;
+$finish;
+
+end
+
+endmodule
